@@ -14,7 +14,7 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-RETRY_PERIOD = 600
+RETRY_PERIOD = 600  # seconds
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 PAYLOAD = {'from_date': int(time.time())}
@@ -30,11 +30,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(stream=sys.stdout)
 logger.addHandler(handler)
-formatter = logging.Formatter(
-    '%(asctime)s,'
-    + '%(levelname)s, %(message)s, %(name)s, %(funcName)s, %(lineno)s'
-)
-handler.setFormatter(formatter)
 
 
 def check_tokens():
@@ -80,7 +75,7 @@ def check_response(response):
     except KeyError:
         logger.error('Ошибка словаря')
         raise KeyError('Ошибка словаря')
-    if type(response['homeworks']) is not list:
+    if not isinstance(response['homeworks'], list):
         logger.error('Полученные данные не являются списком')
         raise TypeError('Полученные данные не являются списком')
     try:
@@ -140,4 +135,9 @@ def main():
 
 
 if __name__ == '__main__':
+    formatter = logging.Formatter(
+        '%(asctime)s,'
+        + '%(levelname)s, %(message)s, %(name)s, %(funcName)s, %(lineno)s'
+    )
+    handler.setFormatter(formatter)
     main()
